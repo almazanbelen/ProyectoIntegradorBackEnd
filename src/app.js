@@ -21,7 +21,7 @@ app.use(session({
     store: MongoStore.create({
         mongoUrl: "mongodb+srv://almazanbelen:belsds22@cluster0.dfo2ui5.mongodb.net/?retryWrites=true&w=majority",
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
-        ttl: 600,
+        ttl: 1000,
     }),
     secret: 'coderhouse',
     resave: false,
