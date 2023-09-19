@@ -30,9 +30,30 @@ router.post("/login", async (req, res) => {
         age: user.age
     };
 
+    if ( email === "coder@house.com" && isValidatePassword(user, password)){
+        req.session.email = email
+        req.session.admin = true
+        res.send("Acceso satisfactorio")
+        res.redirect("/api/sessions/private")
+    }
+
     // Redirect the user after successful login 
     res.redirect("/api/sessions/profile");
 });
+
+// funcion autenticadora
+function auth(req, res, next){
+    if (req.session?.email === "coder@house.com" && req.session?.admin){
+        return next()
+    }
+    return res.status(401).send("Error en la auntenticacion")
+}
+
+//private
+router.get("/private", auth, (req, res) => {
+    res.send("Eres el admin")
+})
+
 
 
 //register
