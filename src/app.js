@@ -10,7 +10,7 @@ const initializePassport = require("./config/passport.config")
 
 const app = express();
 
-mongoose.connect('mongodb+srv://omanias:1234562023@cluster0.3lmci0d.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://almazanbelen:belsds22@cluster0.3lmci0d.mongodb.net/?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://omanias:1234562023@cluster0.3lmci0d.mongodb.net/?retryWrites=true&w=majority',
+        mongoUrl: 'mongodb+srv://almazanbelen:belsds22@cluster0.3lmci0d.mongodb.net/?retryWrites=true&w=majority',
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
         ttl: 600,
     }),
