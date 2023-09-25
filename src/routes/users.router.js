@@ -145,14 +145,30 @@ router.get("/logout", async (req, res) => {
 router.get("/restore", async (req, res) => {
   res.render("restore");
 });
-router.put("/restore", async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !uid) {
-    res.send({ status: "error", error: "Faltan parámetros" });
+router.post("/restore", async (req, res) => {
+  const { email, newPassword } = req.body;
+  try {
+    const userFound = await User.findOne(email);
+    console.log(userFound);
+    if (!userFound) {
+      return res
+        .status(400)
+        .send({ status: "error", error: "Usuario no encontrado" });
+    }
+    const hashedPassword = createHash(newPassword);
+
+    await User.updateOne(
+      { email: userFound.email },
+      { password: hashedPassword }
+    );
+
+    res.redirect("/api/sessions/login");
+  } catch (error) {
+    console.error("Error al restaurar la contraseña:", error);
+    res
+      .status(500)
+      .send({ status: "error", error: "Error interno del servidor" });
   }
-  const result = await User.updateOne({ _email: email }, password);
-  res.send({ result: "success", payload: result });
-  res.redirect("/api/sessions/login");
 });
 
 module.exports = router;
