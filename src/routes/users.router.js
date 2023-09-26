@@ -171,4 +171,9 @@ router.post("/restore", async (req, res) => {
   }
 });
 
+//current
+router.get("/current", passport.authenticate("jwt", {session: false}), (req, res) => {
+  res.send(req.user)
+})
+
 module.exports = router;
