@@ -13,12 +13,14 @@ router.get("/", async (req, res) => {
     const options = {
       limit: limit,
       page: page,
-      sort: {price: sort}
+      sort: {price: sort},
+      lean: true
     }
 
     let products = await productModel.paginate(filter, options);
 
     res.send({ result: "success", payload: products });
+
   } catch (error) {
     console.log(error);
   }

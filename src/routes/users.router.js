@@ -66,7 +66,7 @@ router.post("/login", async (req, res) => {
 
 //private
 router.get("/private", auth, (req, res) => {
-  res.send("Bienvenido/a a la seccion administrativa");
+  res.render("private");
 });
 
 //register
