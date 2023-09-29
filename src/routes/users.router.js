@@ -11,22 +11,6 @@ router.get("/login", async (req, res) => {
   res.render("login");
 });
 
-//post con passport
-// router.post("/login", passport.authenticate("login", { failureRedirect: "/faillogin" }), async (req, res) => {
-//     if (!req.session.user) {
-//         return res.status(400).send("Usuario no encontrado")
-//     }
-//     req.session.user = {
-//         first_name: req.user.first_name,
-//         last_name: req.user.last_name,
-//         email: req.user.email,
-//         age: req.user.age
-//     }
-
-//     res.send({ status: "success", payload: req.user })
-// }
-// )
-
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
@@ -34,7 +18,15 @@ router.post("/login", async (req, res) => {
 
   const user = await usuario.findOne(
     { email },
-    { first_name: 1, last_name: 1, age: 1, password: 1, email: 1 }
+    {
+      first_name: 1,
+      last_name: 1,
+      age: 1,
+      password: 1,
+      email: 1,
+      carts: 1,
+      role: 1,
+    }
   );
 
   if (email === "coder@house.com" && isValidatePassword(user, password)) {
@@ -58,10 +50,21 @@ router.post("/login", async (req, res) => {
       last_name: user.last_name,
       email: user.email,
       age: user.age,
+      carts: user.carts,
+      role: user.role,
     };
     // Redirect the user after successful login
     res.redirect("/api/sessions/profile");
   }
+});
+
+//agregar un carrito de compras
+router.put("/:uid/cart/:cid", async (req, res) => {
+  let { uid, cid } = req.params;
+  let user = await User.findById(uid);
+  user.carts.push({ cart: cid });
+  let result = await User.updateOne({ _id: uid }, user);
+  res.send({ result: "success", payload: result, user: user });
 });
 
 //private
@@ -90,9 +93,9 @@ router.post(
       age,
       password: hashedPassword,
     });
-    // res.send({ status: "success", payload: user });
-    console.log("Usuario registrado con éxito." + user);
+    //res.send({ result: "success", payload: user })
     res.redirect("/api/sessions/login");
+    console.log("Usuario registrado con éxito." + user);
   }
 );
 
@@ -118,9 +121,9 @@ router.get("/profile", async (req, res) => {
     return res.redirect("login");
   }
 
-  const { first_name, last_name, email, age } = req.session.user;
+  const { first_name, last_name, email, age, carts, role } = req.session.user;
 
-  res.render("profile", { first_name, last_name, age, email });
+  res.render("profile", { first_name, last_name, age, email, carts, role });
 });
 
 //fail auth
@@ -157,10 +160,7 @@ router.post("/restore", async (req, res) => {
     }
     const hashedPassword = createHash(newPassword);
 
-    await User.updateOne(
-      { email: userFound.email },
-      { password: hashedPassword }
-    );
+    await User.updateOne({ _id: userFound._id }, { password: hashedPassword });
 
     res.redirect("/api/sessions/login");
   } catch (error) {
@@ -172,8 +172,12 @@ router.post("/restore", async (req, res) => {
 });
 
 //current
-router.get("/current", passport.authenticate("jwt", {session: false}), (req, res) => {
-  res.send(req.user)
-})
+router.get(
+  "/current",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    res.send(req.user);
+  }
+);
 
 module.exports = router;

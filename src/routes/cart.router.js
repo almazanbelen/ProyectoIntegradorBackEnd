@@ -11,6 +11,7 @@ router.get("/", async (req, res) => {
   } catch (error) {}
 });
 
+//crear un carrito
 router.post("/", async (req, res) => {
   let { first_name, last_name, email } = req.body;
   if (!first_name || !last_name || !email) {
@@ -24,7 +25,7 @@ router.post("/", async (req, res) => {
   res.send({ result: "success", payload: result });
 });
 
-//agregar un carrito
+//modificar un carrito
 router.put("/:cid", async (req, res) => {
   let { cid } = req.params;
   let cartToReplace = req.body;
