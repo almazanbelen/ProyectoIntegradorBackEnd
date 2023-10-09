@@ -1,7 +1,7 @@
-<form action="/api/sessions/restore" method="POST">
+<form action="restore" method="POST">
     <label for="email">Email</label>
-    <input type="email">
-    <label for="password">New password</label>
-    <input type="password">
+    <input type="email" name="email" required>
+    <label for="password">Password</label>
+    <input type="password" name="password" required>
     <button type="submit" >Submit</button>
 </form>

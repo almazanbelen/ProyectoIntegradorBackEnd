@@ -11,7 +11,6 @@ const cookieParser = require("cookie-parser");
 const productsRouter = require("./routes/product.router");
 const cartRouter = require("./routes/cart.router");
 const usersRouter = require("./routes/users.router");
-//const { cartModel } = require("./models/cart.model");
 const initializePassport = require("./config/passport.config");
 
 const app = express();
