@@ -1,3 +1,4 @@
+//imports
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
@@ -6,19 +7,20 @@ const handlebars = require("express-handlebars");
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
+const initializePassport = require("./passport/passport.config");
+const config = require("./config/config.js")
 
 //routes
 const productsRouter = require("./routes/product.router");
 const cartRouter = require("./routes/cart.router");
 const usersRouter = require("./routes/users.router");
-const initializePassport = require("./config/passport.config");
+
 
 const app = express();
-const PORT = 8080;
 
 mongoose
   .connect(
-    "mongodb+srv://almazanbelen:belsds22@cluster0.dfo2ui5.mongodb.net/?retryWrites=true&w=majority",
+    config.mongoURL,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -37,7 +39,7 @@ app.use(
   session({
     store: MongoStore.create({
       mongoUrl:
-        "mongodb+srv://almazanbelen:belsds22@cluster0.dfo2ui5.mongodb.net/?retryWrites=true&w=majority",
+        config.mongoURL,
       mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
       ttl: 1000,
     }),
@@ -52,6 +54,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
 
+//vistas
 app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
@@ -68,6 +71,7 @@ app.get("/", (req, res) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.listen(PORT, () => {
-  console.log(`Servidor en ejecución en el puerto ${PORT} `);
+app.listen(config.port, () => {
+  console.log(`Servidor en ejecución en el puerto ${config.port} `);
 });
+

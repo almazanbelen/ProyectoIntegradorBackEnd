@@ -11,7 +11,7 @@ async function postLogin(req, res) {
   if (!email || !password)
     return res.status(400).render("login", { error: "Valores erroneos" });
 
-  const user = await usuario.findOne(
+  const user = await User.findOne(
     { email },
     {
       first_name: 1,
