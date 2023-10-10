@@ -1,8 +1,6 @@
 const dotenv = require("dotenv");
 
 
-const environment = "PRODUCTION";
-
 dotenv.config();
 
 module.exports = {
