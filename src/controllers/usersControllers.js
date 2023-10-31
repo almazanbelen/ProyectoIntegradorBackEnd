@@ -1,6 +1,9 @@
 //imports
-const User = require("../models/User");
-const { createHash, isValidatePassword } = require("../utils/utils");
+
+const { isValidatePassword } = require("../utils/utils");
+const User = require("../dao/class/user.dao");
+
+const userService = new User();
 
 //login
 async function getLogin(req, res) {
@@ -11,19 +14,19 @@ async function postLogin(req, res) {
   if (!email || !password)
     return res.status(400).render("login", { error: "Valores erroneos" });
 
-  const user = await User.findOne(
-    { email },
-    {
-      first_name: 1,
-      last_name: 1,
-      age: 1,
-      password: 1,
-      email: 1,
-      carts: 1,
-      role: 1,
-    }
-  );
-
+  // const user = await User.findOne(
+  //   { email },
+  //   {
+  //     first_name: 1,
+  //     last_name: 1,
+  //     age: 1,
+  //     password: 1,
+  //     email: 1,
+  //     carts: 1,
+  //     role: 1,
+  //   }
+  // );
+  const user = await userService.postLogin(email);
   if (email === "coder@house.com" && isValidatePassword(user, password)) {
     req.session.email = email;
     req.session.admin = true;
@@ -56,10 +59,11 @@ async function postLogin(req, res) {
 //agregar carrito de compras
 async function addCart(req, res) {
   let { uid, cid } = req.params;
-  let user = await User.findById(uid);
-  user.carts.push({ cart: cid });
-  let result = await User.updateOne({ _id: uid }, user);
-  res.send({ result: "success", payload: result, user: user });
+  // let user = await User.findById(uid);
+  // user.carts.push({ cart: cid });
+  // let result = await User.updateOne({ _id: uid }, user);
+  const user = await userService.addCart(uid, cid);
+  res.send({ result: "success", payload: user });
 }
 
 //private
@@ -75,18 +79,26 @@ async function postRegister(req, res) {
   const { first_name, last_name, email, age, password } = req.body;
   if (!first_name || !last_name || !email || !age || !password) {
     return res.status(400).send("Faltan datos.");
+  } else {
+    const user = userService.postRegister(
+      first_name,
+      last_name,
+      email,
+      age,
+      password
+    );
+    res.redirect("/api/sessions/login");
+    console.log("Usuario registrado con éxito.", user);
   }
-  const hashedPassword = createHash(password);
-  const user = await usuario.create({
-    first_name,
-    last_name,
-    email,
-    age,
-    password: hashedPassword,
-  });
+  // const hashedPassword = createHash(password);
+  // const user = await User.create({
+  //   first_name,
+  //   last_name,
+  //   email,
+  //   age,
+  //   password: hashedPassword,
+  // });
   //res.send({ result: "success", payload: user })
-  res.redirect("/api/sessions/login");
-  console.log("Usuario registrado con éxito." + user);
 }
 
 //login con GitHub
@@ -129,28 +141,21 @@ async function getRestore(req, res) {
 async function postRestore(req, res) {
   const { email, password } = req.body;
 
-  try {
-    const userFound = await User.findOne({ email: email });
-
-    if (!userFound) {
-      return res
-        .status(400)
-        .send({ status: "error", error: "Usuario no encontrado" });
-    }
-    const hashedPassword = createHash(password);
-
-    const newPassword = await User.updateOne(
-      { email: userFound.email },
-      { password: hashedPassword }
-    );
-    console.log(newPassword);
+  // const userFound = await User.findOne({ email: email });
+  const userFound = await userService.postRestore(email, password);
+  if (!userFound) {
+    return res
+      .status(400)
+      .send({ status: "error", error: "Usuario no encontrado" });
+  } else {
     res.redirect("/api/sessions/login");
-  } catch (error) {
-    console.error("Error al restaurar la contraseña:", error);
-    res
-      .status(500)
-      .send({ status: "error", error: "Error interno del servidor" });
   }
+  // const hashedPassword = createHash(password);
+
+  // const newPassword = await User.updateOne(
+  //   { email: userFound.email },
+  //   { password: hashedPassword }
+  // );
 }
 
 //current para jwt

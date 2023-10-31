@@ -18,6 +18,9 @@ const usersRouter = require("./routes/users.router");
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 mongoose
   .connect(
     config.mongoURL,
@@ -68,8 +71,7 @@ app.get("/", (req, res) => {
   res.send("Express Sessions!");
 });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
 
 app.listen(config.port, () => {
   console.log(`Servidor en ejecución en el puerto ${config.port} `);

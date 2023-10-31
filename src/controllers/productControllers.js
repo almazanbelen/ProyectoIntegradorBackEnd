@@ -1,38 +1,34 @@
 //imports
-const { productModel } = require("../models/product.model");
+const Products = require("../dao/class/products.dao");
+
+const productService = new Products();
 
 //ver productos
 async function getProducts(req, res) {
-  try {
-    const limit = parseInt(req.query.limit) || 10;
-    const page = parseInt(req.query.page) || 1;
-    const sort = parseInt(req.query.sort) || "asc";
-    const filter =
-      req.query.category === "all"
-        ? {}
-        : req.query.category
-        ? { category: req.query.category }
-        : {};
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page) || 1;
+  const sort = parseInt(req.query.sort) || "asc";
+  const filter =
+    req.query.category === "all"
+      ? {}
+      : req.query.category
+      ? { category: req.query.category }
+      : {};
 
-    const options = {
-      limit: limit,
-      page: page,
-      sort: { price: sort },
-      lean: true,
-    };
-
-    let products = await productModel.paginate(filter, options);
-
-    res.send({ result: "success", payload: products });
-  } catch (error) {
-    console.log(error);
-  }
+  const options = {
+    limit: limit,
+    page: page,
+    sort: { price: sort },
+    lean: true,
+  };
+  let product = await productService.getProducts(filter, options);
+  res.send({ result: "success", payload: product });
 }
 
 //ver productos by ID
 async function productById(req, res) {
   const { pid } = req.params;
-  const result = await productModel.find({ _id: pid });
+  const result = await productService.productById(pid);
   res.send({ status: "success", payload: result });
 }
 
@@ -44,7 +40,7 @@ async function postProduct(req, res) {
     if (code) res.send({ status: "error", error: "Faltan parámetros" });
   }
 
-  let result = await productModel.create({
+  let result = await productService.postProduct({
     title,
     description,
     code,
@@ -69,14 +65,14 @@ async function putProduct(req, res) {
   ) {
     res.send({ status: "error", error: "Faltan parámetros" });
   }
-  let result = await productModel.updateOne({ _id: pid }, productToReplace);
+  let result = await productService.putProduct({ _id: pid }, productToReplace);
   res.send({ result: "success", payload: result });
 }
 
 //eliminar producto
 async function deleteProduct(req, res) {
   let { pid } = req.params;
-  let result = await productModel.deleteOne({ _id: pid });
+  let result = await productService.deleteProduct(pid);
   res.send({ result: "success", payload: result });
 }
 
