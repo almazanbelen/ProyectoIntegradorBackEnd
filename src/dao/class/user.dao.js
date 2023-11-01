@@ -1,5 +1,5 @@
 const { createHash } = require("../../utils/utils");
-const { User } = require("../models/User");
+const User = require("../models/User");
 
 module.exports = class Users {
   //login
@@ -54,7 +54,7 @@ module.exports = class Users {
   //restore
   postRestore = async (email, password) => {
     try {
-      const userFound = await User.findOne(email);
+      const userFound = await User.findOne({ email: email });
       const hashedPassword = createHash(password);
 
       const newPassword = await User.updateOne(

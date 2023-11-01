@@ -1,5 +1,5 @@
 //imports
-
+const config = require("../config/config")
 const { isValidatePassword } = require("../utils/utils");
 const User = require("../dao/class/user.dao");
 
@@ -13,21 +13,8 @@ async function postLogin(req, res) {
   const { email, password } = req.body;
   if (!email || !password)
     return res.status(400).render("login", { error: "Valores erroneos" });
-
-  // const user = await User.findOne(
-  //   { email },
-  //   {
-  //     first_name: 1,
-  //     last_name: 1,
-  //     age: 1,
-  //     password: 1,
-  //     email: 1,
-  //     carts: 1,
-  //     role: 1,
-  //   }
-  // );
   const user = await userService.postLogin(email);
-  if (email === "coder@house.com" && isValidatePassword(user, password)) {
+  if (email === config.adminNAME && isValidatePassword(user, password)) {
     req.session.email = email;
     req.session.admin = true;
     res.redirect("/api/sessions/private");
@@ -59,9 +46,6 @@ async function postLogin(req, res) {
 //agregar carrito de compras
 async function addCart(req, res) {
   let { uid, cid } = req.params;
-  // let user = await User.findById(uid);
-  // user.carts.push({ cart: cid });
-  // let result = await User.updateOne({ _id: uid }, user);
   const user = await userService.addCart(uid, cid);
   res.send({ result: "success", payload: user });
 }
@@ -90,15 +74,6 @@ async function postRegister(req, res) {
     res.redirect("/api/sessions/login");
     console.log("Usuario registrado con éxito.", user);
   }
-  // const hashedPassword = createHash(password);
-  // const user = await User.create({
-  //   first_name,
-  //   last_name,
-  //   email,
-  //   age,
-  //   password: hashedPassword,
-  // });
-  //res.send({ result: "success", payload: user })
 }
 
 //login con GitHub
@@ -112,10 +87,9 @@ async function getProfile(req, res) {
   if (!req.session.user) {
     return res.redirect("login");
   }
-
-  const { first_name, last_name, email, age, carts, role } = req.session.user;
-
-  res.render("profile", { first_name, last_name, age, email, carts, role });
+  const { first_name, last_name, email, age, carts , role } = req.session.user;
+  const cartsParse = JSON.stringify(carts)
+  res.render("profile", { first_name, last_name, age, email, cartsParse, role });
 }
 
 //fail auth
@@ -141,7 +115,6 @@ async function getRestore(req, res) {
 async function postRestore(req, res) {
   const { email, password } = req.body;
 
-  // const userFound = await User.findOne({ email: email });
   const userFound = await userService.postRestore(email, password);
   if (!userFound) {
     return res
@@ -150,12 +123,6 @@ async function postRestore(req, res) {
   } else {
     res.redirect("/api/sessions/login");
   }
-  // const hashedPassword = createHash(password);
-
-  // const newPassword = await User.updateOne(
-  //   { email: userFound.email },
-  //   { password: hashedPassword }
-  // );
 }
 
 //current para jwt

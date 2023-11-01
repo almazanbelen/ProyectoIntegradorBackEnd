@@ -13,7 +13,6 @@ async function getCart(req, res) {
 //crear carrito
 async function postCart(req, res) {
   let { first_name, last_name, email } = req.body
-  console.log(first_name, last_name, email)
   if (!first_name || !last_name || !email) {
     res.send({ status: "error", error: "Faltan parámetros" });
   }else{

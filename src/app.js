@@ -10,16 +10,21 @@ const cookieParser = require("cookie-parser");
 const initializePassport = require("./passport/passport.config");
 const config = require("./config/config.js")
 
+
 //routes
 const productsRouter = require("./routes/product.router");
 const cartRouter = require("./routes/cart.router");
 const usersRouter = require("./routes/users.router");
-
+const ticketsRouter = require("./routes/tickets.router");
+const mailRouter = require("./routes/mail.router")
+const smsRouter = require("./routes/sms.router")
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json())
+
 
 mongoose
   .connect(
@@ -66,12 +71,13 @@ app.set("view engine", "handlebars");
 app.use("/api/sessions", usersRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartRouter);
+app.use("/api/tickets", ticketsRouter);
+app.use("/api/mail", mailRouter)
+app.use("/api/sms", smsRouter)
 
 app.get("/", (req, res) => {
-  res.send("Express Sessions!");
+  res.render("sms");
 });
-
-
 
 app.listen(config.port, () => {
   console.log(`Servidor en ejecución en el puerto ${config.port} `);

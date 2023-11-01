@@ -40,14 +40,14 @@ async function postProduct(req, res) {
     if (code) res.send({ status: "error", error: "Faltan parámetros" });
   }
 
-  let result = await productService.postProduct({
+  let result = await productService.postProduct(
     title,
     description,
     code,
     price,
     stock,
     category,
-  });
+  );
   res.send({ result: "success", payload: result });
 }
 
