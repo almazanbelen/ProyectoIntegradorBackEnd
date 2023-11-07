@@ -12,11 +12,11 @@ async function getCart(req, res) {
 
 //crear carrito
 async function postCart(req, res) {
-  let { first_name, last_name, email } = req.body
-  if (!first_name || !last_name || !email) {
+  let { first_name } = req.body
+  if (!first_name ) {
     res.send({ status: "error", error: "Faltan parámetros" });
   }else{
-    let result = await cartService.postCart(first_name, last_name, email)
+    let result = await cartService.postCart(first_name)
     res.send({ result: "success", payload: result });
 }
   }

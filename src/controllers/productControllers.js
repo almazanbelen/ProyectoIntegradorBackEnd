@@ -1,7 +1,7 @@
 //imports
-const Products = require("../dao/class/products.dao");
 
-const productService = new Products();
+const { productService }= require("../services/repositories/index")
+
 
 //ver productos
 async function getProducts(req, res) {
@@ -21,14 +21,15 @@ async function getProducts(req, res) {
     sort: { price: sort },
     lean: true,
   };
-  let product = await productService.getProducts(filter, options);
+
+  let product = await productService.getProduct(filter, options);
   res.send({ result: "success", payload: product });
 }
 
 //ver productos by ID
 async function productById(req, res) {
   const { pid } = req.params;
-  const result = await productService.productById(pid);
+  const result = await productService.getProductById(pid);
   res.send({ status: "success", payload: result });
 }
 
@@ -40,15 +41,9 @@ async function postProduct(req, res) {
     if (code) res.send({ status: "error", error: "Faltan parámetros" });
   }
 
-  let result = await productService.postProduct(
-    title,
-    description,
-    code,
-    price,
-    stock,
-    category,
-  );
-  res.send({ result: "success", payload: result });
+  let result = await productService.createProduct({ title, description, code, price, stock, category })
+
+ res.send({ result: "success", payload: result});
 }
 
 //modificar producto
@@ -72,7 +67,7 @@ async function putProduct(req, res) {
 //eliminar producto
 async function deleteProduct(req, res) {
   let { pid } = req.params;
-  let result = await productService.deleteProduct(pid);
+  let result = await productService.deleteProducts(pid);
   res.send({ result: "success", payload: result });
 }
 

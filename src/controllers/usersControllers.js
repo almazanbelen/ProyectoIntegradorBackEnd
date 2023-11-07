@@ -1,9 +1,10 @@
 //imports
 const config = require("../config/config")
 const { isValidatePassword } = require("../utils/utils");
-const User = require("../dao/class/user.dao");
+const { userService } = require("../services/repositories/index")
+// const User = require("../dao/class/user.dao");
 
-const userService = new User();
+// const userService = new User();
 
 //login
 async function getLogin(req, res) {

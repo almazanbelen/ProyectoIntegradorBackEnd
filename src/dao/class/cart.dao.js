@@ -14,9 +14,7 @@ module.exports = class Cart {
   postCart = async (first_name, last_name, email) => {
     try {
       let carts = await cartModel.create({
-        first_name,
-        last_name,
-        email,
+        first_name
       });
       return carts;
     } catch (error) {
