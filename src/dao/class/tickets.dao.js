@@ -11,9 +11,12 @@ module.exports = class Tickets {
     }
   };
 
-  postTicket = async (number_phone) => {
+  postTicket = async (codigoUnico, date) => {
     try {
-      const ticket = await ticketModel.create({ number_phone });
+      const ticket = await ticketModel.create({
+        code: codigoUnico,
+        date: date,
+      });
       return ticket;
     } catch (error) {
       console.log(error);
@@ -21,10 +24,11 @@ module.exports = class Tickets {
     }
   };
 
-  putTicket = async (tid, uid) => {
+
+  confirmationTicket = async (tid, cid) => {
     try {
-      let ticket = await ticketModel.findById(tid);
-      ticket.users.push({ user: uid });
+      const ticket = await ticketModel.findById(tid);
+      ticket.purchase.push({ cart: cid });
       const result = await ticketModel.updateOne({ _id: tid }, ticket);
       return result;
     } catch (error) {

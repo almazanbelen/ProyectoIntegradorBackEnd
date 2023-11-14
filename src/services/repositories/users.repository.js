@@ -1,5 +1,4 @@
 const UsersDTO = require("../../dao/dtos/users.dto");
-const User = require("../../dao/models/User");
 
 module.exports = class UserRepository {
   constructor(dao) {

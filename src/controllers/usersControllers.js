@@ -1,10 +1,8 @@
 //imports
-const config = require("../config/config")
 const { isValidatePassword } = require("../utils/utils");
-const { userService } = require("../services/repositories/index")
-// const User = require("../dao/class/user.dao");
+const { userService } = require("../services/repositories/index");
+const config = require("../config/config");
 
-// const userService = new User();
 
 //login
 async function getLogin(req, res) {
@@ -12,37 +10,44 @@ async function getLogin(req, res) {
 }
 async function postLogin(req, res) {
   const { email, password } = req.body;
-  if (!email || !password)
+
+  if (!email || !password){
     return res.status(400).render("login", { error: "Valores erroneos" });
+  }
+
   const user = await userService.postLogin(email);
+
+  if (!user) {
+    return res
+      .status(400)
+      .render("login", { error: "Usuario no encontrado" });
+  }
+
   if (email === config.adminNAME && isValidatePassword(user, password)) {
     req.session.email = email;
     req.session.admin = true;
-    res.redirect("/api/sessions/private");
-  } else {
-    if (!user) {
-      return res
-        .status(400)
-        .render("login", { error: "Usuario no encontrado" });
-    }
-
+    res.redirect("/api/sessions/private");  
     if (!isValidatePassword(user, password)) {
-      return res.status(401).render("login", { error: "Error en password" });
+    return res.status(401).render("login", { error: "Error en password" });
     }
-
-    // Set the user session here if login is successful
-    req.session.user = {
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      age: user.age,
-      carts: user.carts,
-      role: user.role,
-    };
+  }else {
+     // Set the user session here if login is successful
+  req.session.user = {
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+    age: user.age,
+    carts: user.carts,
+    role: user.role,
+  };
     // Redirect the user after successful login
-    res.redirect("/api/sessions/profile");
+  res.redirect("/api/sessions/profile");
+    }  
+ 
   }
-}
+
+   
+
 
 //agregar carrito de compras
 async function addCart(req, res) {

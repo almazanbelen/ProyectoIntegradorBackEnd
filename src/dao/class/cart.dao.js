@@ -11,6 +11,16 @@ module.exports = class Cart {
     }
   };
 
+  getCartById = async (cid) => {
+    try {
+      const result = await cartModel.findOne({ _id: cid }).populate('products.product')
+      return result
+    } catch (error) {
+      console.log('error: ' + error)
+      return null
+    }
+  }
+
   postCart = async (first_name, last_name, email) => {
     try {
       let carts = await cartModel.create({

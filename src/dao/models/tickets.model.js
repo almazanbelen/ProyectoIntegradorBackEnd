@@ -3,20 +3,23 @@ const mongoose = require("mongoose");
 const ticketCollection = "tickets"
 
 const ticketSchema = new mongoose.Schema({
-    number_phone: { type: Number, required: true },
-    users: [{
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "user",
-            require: true,
-        }
-        
-    }]
+    code: { type: String , require: true },
+    date: { type: Date , require: true},
+    purchase: [
+        {
+            cart: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "carts",
+              require: true,
+            },
+        },
+        ],
+    amount: { type: Number }
 })
-
 ticketSchema.pre("find", function () {
-    this.populate("users.user");
+    this.populate("purchase.cart");
   });
+
 
 const ticketModel = mongoose.model(ticketCollection, ticketSchema)
 

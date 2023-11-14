@@ -10,6 +10,14 @@ const UserRepository = require("../repositories/users.repository")
 const user = new Users
 const userService = new UserRepository(user)
 
+const Tickets = require("../../dao/class/tickets.dao")
+const TicketRepository = require("../repositories/tickets.repository")
+
+const ticket = new Tickets
+const ticketService = new TicketRepository(ticket)
+
 module.exports = {
-    productService, userService
+    productService, 
+    userService,
+    ticketService
 }

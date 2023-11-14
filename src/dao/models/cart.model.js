@@ -11,9 +11,11 @@ const cartSchema = new mongoose.Schema({
         ref: "products",
         require: true,
       },
-      quantity: { type: Number, default: 1 },
+      quantity: { type: Number, default: 1},
+      
     },
   ],
+  totalPrice: {type: Number}
 });
 
 cartSchema.pre("find", function () {

@@ -1,9 +1,5 @@
 //imports
-
-const Tickets = require("../dao/class/tickets.dao");
-
-//instancia tickets
-const ticketService = new Tickets();
+const { ticketService } = require("../services/repositories/index");
 
 async function getTicket(req, res) {
   res.render("tickets");
@@ -16,24 +12,24 @@ async function getTicketById(req, res) {
 }
 
 async function postTicket(req, res) {
-  const { number_phone } = req.body;
-  if (!number_phone) {
-    res.send({ status: "error", error: "Faltan parámetros" });
-  } else {
-    const result = ticketService.postTicket(number_phone);
-    res.send({ result: "success", payload: result });
-  }
+  const codigoUnico = uuidv4();
+  const date = new Date();
+  const result = await ticketService.postTicket(codigoUnico, date);
+  res.send({ result: "success", payload: result });
 }
 
-async function putTicket(req, res) {
-  const { tid, uid } = req.params;
-  const result = ticketService.putTicket(tid, uid)
-  res.send({ result: "success", payload: result});
+async function confirmationTicket(req, res) {
+  const { tid, cid } = req.params;
+  if (!tid || !cid) {
+    res.send({ status: error, error: "Parametros inexistentes" });
+  }
+  const result = ticketService.confirmationTicket(tid, cid);
+  res.send({ result: "success", result: result });
 }
 
 module.exports = {
   getTicket,
   getTicketById,
   postTicket,
-  putTicket,
+  confirmationTicket,
 };
