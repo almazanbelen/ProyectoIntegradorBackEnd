@@ -1,3 +1,6 @@
+const {
+  ConversationContextImpl,
+} = require("twilio/lib/rest/conversations/v1/conversation");
 const { cartModel } = require("../models/cart.model");
 
 module.exports = class Cart {
@@ -13,18 +16,19 @@ module.exports = class Cart {
 
   getCartById = async (cid) => {
     try {
-      const result = await cartModel.findOne({ _id: cid }).populate('products.product')
-      return result
+      const result = await cartModel
+        .findOne({ _id: cid });
+      return result;
     } catch (error) {
-      console.log('error: ' + error)
-      return null
+      console.log("error: " + error);
+      return null;
     }
-  }
+  };
 
-  postCart = async (first_name, last_name, email) => {
+  postCart = async (uid) => {
     try {
       let carts = await cartModel.create({
-        first_name
+        user: uid
       });
       return carts;
     } catch (error) {
@@ -43,15 +47,32 @@ module.exports = class Cart {
     }
   };
 
-  addProduct = async (cid, pid) => {
+  addProduct= async(cid, pid, quantity) => {
     try {
-      let cart = await cartModel.findById(cid);
-      cart.products.push({ product: pid });
-      let result = await cartModel.updateOne({ _id: cid }, cart);
-      return result;
+      const cart = await cartModel.findOne({ _id: cid });
+      cart.products.push({ product: pid, quantity: quantity });
+      await cart.save();
+      return cart;
     } catch (error) {
       console.log(error);
-      return null;
+      throw error;
+    }
+  }
+
+  calculateTotalPrice = async (cid) => {
+    try {
+      let cart = await cartModel.findOne({ _id: cid });
+      let totalPrice = 0;
+      cart.products.map((p) => {
+        totalPrice += p.product.price * p.quantity;
+      });
+      const result = await cartModel.updateOne(cart, {
+        totalPrice: totalPrice,
+      });
+      return result
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
   };
 
@@ -67,7 +88,7 @@ module.exports = class Cart {
 
   deleteProduct = async (cid, pid) => {
     try {
-      let cart = await cartModel.findById(cid);
+      let cart = await cartModel.findOne({_id:cid});
       cart.products.splice({ _id: pid });
       let result = await cartModel.updateOne({ _id: cid }, cart);
       return result;

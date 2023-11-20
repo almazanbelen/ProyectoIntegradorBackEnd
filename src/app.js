@@ -35,7 +35,7 @@ mongoose
     }
   )
   .then(() => {
-    console.log("Conectado a la BD de Mongo Atlas");
+    console.log("Conectado a la BD");
   })
   .catch((error) => {
     console.error("Error en la conexión", error);

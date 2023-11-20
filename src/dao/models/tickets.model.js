@@ -1,26 +1,27 @@
 const mongoose = require("mongoose");
 
-const ticketCollection = "tickets"
+const ticketCollection = "tickets";
 
 const ticketSchema = new mongoose.Schema({
-    code: { type: String , require: true },
-    date: { type: Date , require: true},
-    purchase: [
-        {
-            cart: {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "carts",
-              require: true,
-            },
+  code: { type: String, require: true },
+  date: { type: Date, require: true },
+  purchase: {
+    type: [
+      {
+        cart: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "carts",
+          require: true,
         },
-        ],
-    amount: { type: Number }
-})
-ticketSchema.pre("find", function () {
-    this.populate("purchase.cart");
-  });
+      },
+    ],
+  },
+  amount: { type: Number },
+});
+ticketSchema.pre("findOne", function () {
+  this.populate("purchase.cart");
+});
 
-
-const ticketModel = mongoose.model(ticketCollection, ticketSchema)
+const ticketModel = mongoose.model(ticketCollection, ticketSchema);
 
 module.exports = { ticketModel };

@@ -21,4 +21,9 @@ module.exports = class TicketRepository {
     let result = await this.dao.confirmationTicket(tid, cid)
     return result
   }
+
+  amountTicket = async (tid) => {
+    let result = await this.dao.amountTicket(tid)
+    return result
+  }
 };

@@ -1,6 +1,6 @@
 //imports
 const { isValidatePassword } = require("../utils/utils");
-const { userService } = require("../services/repositories/index");
+const  userService  = require("../dao/factory/factoryUsers.js");
 const config = require("../config/config");
 
 
@@ -31,7 +31,7 @@ async function postLogin(req, res) {
     return res.status(401).render("login", { error: "Error en password" });
     }
   }else {
-     // Set the user session here if login is successful
+    // Set the user session here if login is successful
   req.session.user = {
     first_name: user.first_name,
     last_name: user.last_name,
@@ -42,19 +42,9 @@ async function postLogin(req, res) {
   };
     // Redirect the user after successful login
   res.redirect("/api/sessions/profile");
-    }  
+   }  
  
   }
-
-   
-
-
-//agregar carrito de compras
-async function addCart(req, res) {
-  let { uid, cid } = req.params;
-  const user = await userService.addCart(uid, cid);
-  res.send({ result: "success", payload: user });
-}
 
 //private
 async function getPrivate(req, res) {
@@ -77,8 +67,9 @@ async function postRegister(req, res) {
       age,
       password
     );
+    
     res.redirect("/api/sessions/login");
-    console.log("Usuario registrado con éxito.", user);
+    console.log("Usuario registrado con éxito.");
   }
 }
 
@@ -139,7 +130,6 @@ function current(req, res) {
 module.exports = {
   getLogin,
   postLogin,
-  addCart,
   getPrivate,
   getRegister,
   postRegister,

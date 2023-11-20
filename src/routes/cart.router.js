@@ -7,8 +7,11 @@ const router = Router();
 //ver carritos
 router.get("/", cartControllers.getCart);
 
+//ver carrito by ID
+router.get("/:cid", cartControllers.getCartById);
+
 //crear un carrito
-router.post("/", cartControllers.postCart);
+router.post("/user/:uid", cartControllers.postCart);
 
 //modificar un carrito
 router.put("/:cid", cartControllers.putCart);

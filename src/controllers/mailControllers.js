@@ -10,10 +10,14 @@ async function postMail(req, res) {
   const mailOptions = {
     from: config.adminEMAIL,
     to: email,
-    subject: "Confirmacion de compra",
+    subject: "Recuperar contraseña",
     html: `
     <div>
-        <h1>¡Felicitaciones! ¡Tu compra fue realizada con éxito!</h1>        
+        <h2>Tienes 60 minutos para reestablecer tu contraseña ingresando al siguiente</h2>
+        <h2>
+          <a href="http://localhost:8080/api/sessions/restore">Link</a>   
+        </h2>
+           
     </div>
     `,
   };

@@ -13,23 +13,10 @@ module.exports = class Users {
           age: 1,
           password: 1,
           email: 1,
-          carts: 1,
           role: 1,
         }
       );
       return user;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  };
-
-  addCart = async (uid, cid) => {
-    try {
-      let user = await User.findById(uid);
-      user.carts.push({ cart: cid });
-      let result = await User.updateOne({ _id: uid }, user);
-      return result;
     } catch (error) {
       console.log(error);
       return null;

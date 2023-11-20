@@ -1,8 +1,10 @@
 //imports
+const { ticketModel } = require("../dao/models/tickets.model");
 const { ticketService } = require("../services/repositories/index");
 
 async function getTicket(req, res) {
-  res.render("tickets");
+  const result = await ticketModel.find()
+  res.send(result)
 }
 
 async function getTicketById(req, res) {
@@ -23,8 +25,11 @@ async function confirmationTicket(req, res) {
   if (!tid || !cid) {
     res.send({ status: error, error: "Parametros inexistentes" });
   }
-  const result = ticketService.confirmationTicket(tid, cid);
-  res.send({ result: "success", result: result });
+  const ticket = ticketService.confirmationTicket(tid, cid);
+  const result = ticketService.amountTicket(tid)
+
+
+  res.send({ result: "success", payload: result });
 }
 
 module.exports = {

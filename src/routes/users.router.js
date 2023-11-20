@@ -9,9 +9,6 @@ router.get("/login", usersController.getLogin);
 
 router.post("/login", usersController.postLogin);
 
-//agregar un carrito de compras
-router.put("/:uid/cart/:cid", usersController.addCart);
-
 //private
 router.get("/private", auth, usersController.getPrivate);
 

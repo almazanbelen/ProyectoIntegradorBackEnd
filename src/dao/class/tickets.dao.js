@@ -24,13 +24,27 @@ module.exports = class Tickets {
     }
   };
 
-
   confirmationTicket = async (tid, cid) => {
     try {
       const ticket = await ticketModel.findById(tid);
       ticket.purchase.push({ cart: cid });
       const result = await ticketModel.updateOne({ _id: tid }, ticket);
       return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
+
+  amountTicket = async (tid) => {
+    try {
+      let ticket = await ticketModel.findOne({ _id: tid });
+      let amount;
+      ticket.purchase.map((c) => {
+        amount = c.cart.totalPrice;
+      });
+      const result = await ticketModel.updateOne(ticket, { amount: amount });
+      return result
     } catch (error) {
       console.log(error);
       return null;

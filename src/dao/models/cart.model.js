@@ -3,23 +3,32 @@ const mongoose = require("mongoose");
 const cartCollection = "carts";
 
 const cartSchema = new mongoose.Schema({
-  first_name: { type: String, required: true, max: 100 },
-  products: [
-    {
-      product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "products",
-        require: true,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "products",
+    require: true,
+  },
+  products: {
+    type: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "products",
+          require: true,
+        },
+        quantity: { type: Number },
       },
-      quantity: { type: Number, default: 1},
-      
-    },
-  ],
-  totalPrice: {type: Number}
+    ],
+    default: [],
+  },
+  totalPrice: { type: String },
 });
 
-cartSchema.pre("find", function () {
+cartSchema.pre("findOne", function () {
   this.populate("products.product");
+});
+cartSchema.pre("findOne", function () {
+  this.populate("user");
 });
 
 const cartModel = mongoose.model(cartCollection, cartSchema);

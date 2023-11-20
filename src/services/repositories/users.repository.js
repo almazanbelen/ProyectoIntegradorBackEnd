@@ -4,15 +4,12 @@ module.exports = class UserRepository {
   constructor(dao) {
     this.dao = dao;
   }
-
+  
   postLogin = async (email) => {
     let result = await this.dao.postLogin(email);
     return result;
   };
-  addCart = async (uid, cid) => {
-    let result = await this.dao.addCart(uid, cid);
-    return result;
-  };
+
   postRegister = async (user) => {
     let users = new UsersDTO(user);
     let result = await this.dao.postRegister(

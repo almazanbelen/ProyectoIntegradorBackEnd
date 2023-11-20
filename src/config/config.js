@@ -1,8 +1,16 @@
+//imports
 const dotenv = require("dotenv");
 
+//instancia del ambiente de produccion/desarrollo
+const enviroment = "DEVELOPMENT";
 
-dotenv.config();
+//congig del .env
+dotenv.config({
+  path:
+    enviroment === "DEVELOPMENT" ? "./.env.development" : "./.env.production",
+});
 
+//exports
 module.exports = {
   port:process.env.PORT,
   mongoURL:process.env.MONGO_URL,
@@ -10,5 +18,7 @@ module.exports = {
   twilioACCOUNT:process.env.TWILIO_ACCOUNT,
   twilioAUTH:process.env.TWILIO_AUTH,
   twilioSMS:process.env.TWILIO_SMS,
-  adminEMAIL:process.env.ADMIN_EMAIL
+  adminEMAIL:process.env.ADMIN_EMAIL,
+  enviroment:process.env.NODE_ENV,
+  persistence:process.env.PERSISTENCE
 };
