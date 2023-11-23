@@ -1,8 +1,10 @@
 //imports
 const { isValidatePassword } = require("../utils/utils");
-const  userService  = require("../dao/factory/factoryUsers.js");
+const userService = require("../dao/factory/factoryUsers.js");
 const config = require("../config/config");
-
+const userRole = require("../utils/usersRole.js");
+const jwt = require("jsonwebtoken");
+const PRIVATE_KEY = "CoderKey";
 
 //login
 async function getLogin(req, res) {
@@ -11,40 +13,35 @@ async function getLogin(req, res) {
 async function postLogin(req, res) {
   const { email, password } = req.body;
 
-  if (!email || !password){
+  if (!email || !password) {
     return res.status(400).render("login", { error: "Valores erroneos" });
   }
 
   const user = await userService.postLogin(email);
 
   if (!user) {
-    return res
-      .status(400)
-      .render("login", { error: "Usuario no encontrado" });
+    return res.status(400).render("login", { error: "Usuario no encontrado" });
   }
 
-  if (email === config.adminNAME && isValidatePassword(user, password)) {
+  if (email === config.adminNAME || email === config.adminEMAIL && isValidatePassword(user, password)) {
     req.session.email = email;
-    req.session.admin = true;
-    res.redirect("/api/sessions/private");  
+    res.redirect("/api/sessions/private");
     if (!isValidatePassword(user, password)) {
-    return res.status(401).render("login", { error: "Error en password" });
+      return res.status(401).render("login", { error: "Error en password" });
     }
   }else {
     // Set the user session here if login is successful
-  req.session.user = {
-    first_name: user.first_name,
-    last_name: user.last_name,
-    email: user.email,
-    age: user.age,
-    carts: user.carts,
-    role: user.role,
-  };
+    req.session.user = {
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      age: user.age,
+      role: user.role,
+    };
     // Redirect the user after successful login
-  res.redirect("/api/sessions/profile");
-   }  
- 
+    res.redirect("/api/sessions/profile");
   }
+}
 
 //private
 async function getPrivate(req, res) {
@@ -57,7 +54,9 @@ async function getRegister(req, res) {
 }
 async function postRegister(req, res) {
   const { first_name, last_name, email, age, password } = req.body;
-  if (!first_name || !last_name || !email || !age || !password) {
+  const { role } = userRole(email);
+
+  if (!first_name || !last_name || !email || !age || !password || !role) {
     return res.status(400).send("Faltan datos.");
   } else {
     const user = userService.postRegister(
@@ -65,9 +64,9 @@ async function postRegister(req, res) {
       last_name,
       email,
       age,
-      password
+      password,
+      role
     );
-    
     res.redirect("/api/sessions/login");
     console.log("Usuario registrado con éxito.");
   }
@@ -84,9 +83,16 @@ async function getProfile(req, res) {
   if (!req.session.user) {
     return res.redirect("login");
   }
-  const { first_name, last_name, email, age, carts , role } = req.session.user;
-  const cartsParse = JSON.stringify(carts)
-  res.render("profile", { first_name, last_name, age, email, cartsParse, role });
+  const { first_name, last_name, email, age, carts, role } = req.session.user;
+  const cartsParse = JSON.stringify(carts);
+  res.render("profile", {
+    first_name,
+    last_name,
+    age,
+    email,
+    cartsParse,
+    role,
+  });
 }
 
 //fail auth
@@ -107,19 +113,31 @@ async function logout(req, res) {
 
 //restore
 async function getRestore(req, res) {
-  res.render("restore");
+  const token = req.params.token;
+  res.render("restore", { token });
 }
 async function postRestore(req, res) {
-  const { email, password } = req.body;
-
-  const userFound = await userService.postRestore(email, password);
-  if (!userFound) {
-    return res
-      .status(400)
-      .send({ status: "error", error: "Usuario no encontrado" });
-  } else {
-    res.redirect("/api/sessions/login");
-  }
+  const token = req.params.token;
+  jwt.verify(token, "CoderKey", async (err, decoded) => {
+    if (err) {
+      console.log(err);
+      return res.redirect("/api/sessions/login");
+    } else {
+      const { email, password } = req.body;
+      const user = await userService.findUser(email);
+      if (!user) {
+        return res
+          .status(400)
+          .send({ status: "error", error: "Usuario no encontrado" });
+      }
+      if (isValidatePassword(user, password)) {
+        res.send({ error: "Ingrese una contraseña diferente a la anterior" });
+      } else {
+        const userFound = await userService.postRestore(email, password);
+        res.redirect("/api/sessions/login");
+      }
+    }
+  });
 }
 
 //current para jwt

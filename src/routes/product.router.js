@@ -1,6 +1,7 @@
 //imports
 const { Router } = require("express");
 const productControllers = require("../controllers/productControllers");
+const { auth } = require("../utils/authRole");
 
 const router = Router();
 

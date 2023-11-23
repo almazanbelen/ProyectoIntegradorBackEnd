@@ -1,6 +1,7 @@
 //imports
-
-const { productService }= require("../services/repositories/index")
+const { productService } = require("../services/repositories/index");
+const User = require("../dao/models/User");
+const { productModel } = require("../dao/models/product.model");
 
 
 //ver productos
@@ -35,15 +36,28 @@ async function productById(req, res) {
 
 //agregar producto
 async function postProduct(req, res) {
-  let { title, description, code, price, stock, category } = req.body;
+  let { title, description, code, price, stock, category, owner } = req.body;
 
   if (!title || !description || !code || !price || !stock || !category) {
     if (code) res.send({ status: "error", error: "Faltan parámetros" });
   }
+  let user = await User.findOne({_id: owner})
+  
+  if (user.role == "premium" || user.role == "admin") {
+    let result = await productModel.create({
+      title,
+      description,
+      code,
+      price,
+      stock,
+      category,
+      owner: { user: owner },
+    });
 
-  let result = await productService.createProduct({ title, description, code, price, stock, category })
-
- res.send({ result: "success", payload: result});
+    res.send({ result: "success", payload: result });
+  } else{
+    res.send({ error: "Acceso no autorizado" })
+  }
 }
 
 //modificar producto

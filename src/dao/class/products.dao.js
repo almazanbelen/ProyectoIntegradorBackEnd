@@ -28,6 +28,7 @@ module.exports = class Products {
     price,
     stock,
     category,
+    owner
   ) => {
     try {
       let product = productModel.create({
@@ -36,7 +37,8 @@ module.exports = class Products {
         code,
         price,
         stock,
-        category,
+        category, 
+        owner
       });
       return product;
     } catch (error) {

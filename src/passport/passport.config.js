@@ -4,6 +4,7 @@ const userService = require("../dao/models/User");
 const GitHubStrategy = require("passport-github2");
 const jwt = require("passport-jwt")
 const { createHash, isValidatePassword } = require("../utils/utils");
+const userRole = require("../utils/usersRole");
 
 const localStrategy = local.Strategy;
 const JWTStrategy = jwt.Strategy;
@@ -24,6 +25,7 @@ const initializePassport = () => {
       { passReqToCallback: true, usernameField: "email" },
       async (req, username, password, done) => {
         const { first_name, last_name, email, age } = req.body;
+        const { role } = userRole(email)
         try {
           let user = await userService.findOne({ email: username });
           if (user) {
@@ -31,7 +33,7 @@ const initializePassport = () => {
             return done(null, false);
           }
 
-          if (!first_name || !last_name || !email || !age || !password) {
+          if (!first_name || !last_name || !email || !age || !password || !role) {
             // Check if all required fields are present in the request body
             console.log("Faltan campos obligatorios");
             return done(null, false);
@@ -43,6 +45,7 @@ const initializePassport = () => {
             email,
             age,
             password: createHash(password),
+            role
           };
           let result = await userService.create(newUser);
           return done(null, result);

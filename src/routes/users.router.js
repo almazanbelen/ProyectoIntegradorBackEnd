@@ -47,9 +47,9 @@ router.get("/faillogin", usersController.failLogin);
 router.get("/logout", usersController.logout);
 
 //restore
-router.get("/restore", usersController.getRestore);
+router.get("/restore/:token", usersController.getRestore);
 
-router.post("/restore", usersController.postRestore);
+router.post("/restore/:token", usersController.postRestore);
 
 //current para jwt
 router.get(

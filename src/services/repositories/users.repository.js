@@ -17,10 +17,17 @@ module.exports = class UserRepository {
       users.last_name,
       users.email,
       users.age,
-      users.password
+      users.password, 
+      users.role
     );
     return result;
-  };
+  }
+
+  findUser = async (email) => {
+    let result = await this.dao.findUser(email)
+    return result
+  }
+  
   postRestore = async (email, password) => {
     let result = await this.dao.postRestore(email, password);
     return result;

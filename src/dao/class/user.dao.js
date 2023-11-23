@@ -1,5 +1,7 @@
+//const userRole = require("../../utils/usersRole");
 const { createHash } = require("../../utils/utils");
 const User = require("../models/User");
+
 
 module.exports = class Users {
   //login
@@ -24,7 +26,7 @@ module.exports = class Users {
   };
 
   //register
-  postRegister = async (first_name, last_name, email, age, password) => {
+  postRegister = async (first_name, last_name, email, age, password, role) => {
     try {
       const hashedPassword = createHash(password);
       const user = await User.create({
@@ -33,9 +35,21 @@ module.exports = class Users {
         email,
         age,
         password: hashedPassword,
+        role,
       });
       return user;
     } catch (error) {}
+  };
+
+  //obtener un usuario
+  findUser = async (email) => {
+    try {
+      const user = await User.findOne({email: email});
+      return user;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   };
 
   //restore
@@ -43,7 +57,6 @@ module.exports = class Users {
     try {
       const userFound = await User.findOne({ email: email });
       const hashedPassword = createHash(password);
-
       const newPassword = await User.updateOne(
         { email: userFound.email },
         { password: hashedPassword }
