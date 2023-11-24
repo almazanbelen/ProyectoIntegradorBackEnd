@@ -2,10 +2,11 @@
 const { productService } = require("../services/repositories/index");
 const User = require("../dao/models/User");
 const { productModel } = require("../dao/models/product.model");
-const { v4:uuidv4 }= require("uuid")
+const { v4: uuidv4 } = require("uuid");
 
 //ver productos
 async function getProducts(req, res) {
+  //filtros
   const limit = parseInt(req.query.limit) || 10;
   const page = parseInt(req.query.page) || 1;
   const sort = parseInt(req.query.sort) || "asc";
@@ -38,13 +39,13 @@ async function productById(req, res) {
 async function postProduct(req, res) {
   let { title, description, price, stock, category, owner } = req.body;
 
-  let  code  = uuidv4()
-  
+  let code = uuidv4();
+
   if (!title || !description || !price || !stock || !category) {
     if (code) res.send({ status: "error", error: "Faltan parámetros" });
   }
+  //validacion del rol de usuario
   let user = await User.findOne({ _id: owner });
-
   if (user.role == "premium" || user.role == "admin") {
     let result = await productService.postProduct({
       title,
@@ -83,20 +84,19 @@ async function putProduct(req, res) {
 //eliminar producto
 async function deleteProduct(req, res) {
   let { pid, uid } = req.params;
-//----------mandar al dao
+  //busca el usuario que creo el producto
   let product = await productModel.findOne({ _id: pid });
   let role;
   product.owner.map((o) => {
     role = o.user.role;
   });
-//-----mandar al dao
+  //busca el usuario que quiere eliminar producto
   let user = await User.findOne({ _id: uid });
-
+  //validacion de roles
   if (role == "premium" && user.role === "premium") {
     let result = await productService.deleteProducts(pid);
     res.send({ result: "success", payload: result });
-  } 
-
+  }
   if (user.role === "admin") {
     let result = await productService.deleteProducts(pid);
     res.send({ result: "success", payload: result });

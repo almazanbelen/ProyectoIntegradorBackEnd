@@ -1,6 +1,8 @@
+//imports
 const { productModel } = require("../models/product.model");
 
 module.exports = class Products {
+  //obtener productos
   getProducts = async (filter, options) => {
     try {
       let Product = await productModel.paginate(filter, options);
@@ -10,7 +12,7 @@ module.exports = class Products {
       return null;
     }
   };
-
+  //obtener productos by ID
   productById = async (pid) => {
     try {
       const result = await productModel.find({ _id: pid });
@@ -20,7 +22,7 @@ module.exports = class Products {
       return null;
     }
   };
-
+  //crear productos
   postProduct = async (
     title,
     description,
@@ -37,8 +39,8 @@ module.exports = class Products {
         code,
         price,
         stock,
-        category, 
-        owner: { user: owner }
+        category,
+        owner: { user: owner },
       });
       return product;
     } catch (error) {
@@ -46,8 +48,8 @@ module.exports = class Products {
       return null;
     }
   };
-
-  putProduct = async ( pid , productToReplace) => {
+  //editar productos
+  putProduct = async (pid, productToReplace) => {
     try {
       let result = await productModel.updateOne({ _id: pid }, productToReplace);
       return result;
@@ -56,7 +58,7 @@ module.exports = class Products {
       return null;
     }
   };
-
+  //eliminar productos
   deleteProduct = async (pid) => {
     try {
       let result = await productModel.deleteOne({ _id: pid });

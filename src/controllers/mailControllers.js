@@ -1,14 +1,17 @@
+//imports
 const config = require("../config/config");
 const { generateToken } = require("../utils/jwt");
 const transporter = require("../utils/nodemailer");
 
+//render vista para enviar correo
 async function getMail(req, res) {
   res.render("mail");
 }
 
+//enviar correo
 async function postMail(req, res) {
   const { email } = req.body;
-  const token = generateToken(email)
+  const token = generateToken(email);
   const mailOptions = {
     from: config.adminEMAIL,
     to: email,
@@ -23,18 +26,22 @@ async function postMail(req, res) {
     </div>
     `,
   };
-  
+
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.log(error);
       res.send("Error de envio");
     } else {
       console.log("Correo enviado", info.response);
-      res.send(`Correo enviado con éxito a ${email}, codigo de acceso: ${token}`);
+      res.send(
+        `Correo enviado con éxito a ${email}, codigo de acceso: ${token}`
+      );
     }
   });
 }
+
+//exports
 module.exports = {
   getMail,
-  postMail
+  postMail,
 };

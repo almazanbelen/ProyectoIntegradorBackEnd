@@ -1,9 +1,11 @@
+//imports
 const { mongoose } = require("mongoose");
 const Users = require("../class/user.dao");
 const UserMemory = require("../memory/users.memory");
 const config = require("../../config/config");
 const UserRepository = require("../../services/repositories/users.repository");
 
+//switch entre memoria y mongo segun dotenv
 let userService;
 switch (config.persistence) {
   case "MONGO":
@@ -18,4 +20,6 @@ switch (config.persistence) {
     break;
     
 }
+
+//exports
 module.exports = userService;

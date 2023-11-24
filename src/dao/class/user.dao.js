@@ -1,7 +1,6 @@
-//const userRole = require("../../utils/usersRole");
+//imports
 const { createHash } = require("../../utils/utils");
 const User = require("../models/User");
-
 
 module.exports = class Users {
   //login
@@ -44,7 +43,7 @@ module.exports = class Users {
   //obtener un usuario
   findUser = async (email) => {
     try {
-      const user = await User.findOne({email: email});
+      const user = await User.findOne({ email: email });
       return user;
     } catch (error) {
       console.log(error);

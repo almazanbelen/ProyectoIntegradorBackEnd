@@ -2,7 +2,6 @@
 
 const Cart = require("../dao/class/cart.dao");
 const User = require("../dao/models/User");
-const { cartModel } = require("../dao/models/cart.model");
 const { productModel } = require("../dao/models/product.model");
 
 //instancia de carrito
@@ -49,25 +48,26 @@ async function putCart(req, res) {
 async function addProduct(req, res) {
   let { cid, pid, uid } = req.params;
   const { quantity } = req.body;
-  
+
+  //busca el usuario que creo el producto
   let product = await productModel.findOne({ _id: pid });
   let role;
   product.owner.map((o) => {
     role = o.user.role;
   });
+  //busca el usuario que quiere agregar el producto
   let user = await User.findOne({ _id: uid });
-
-
+  //validacion del rol
   if (role == "premium" && user.role == "premium") {
     res.send({ error: "No puedes agregar un producto creado por ti" });
   }
-  if(product.stock < quantity){
-    res.send({error: `Stock insuficiente, stock disponible: ${product.stock}`})
+  //validacion del stock de productos
+  if (product.stock < quantity) {
+    res.send({
+      error: `Stock insuficiente, stock disponible: ${product.stock}`,
+    });
   } else {
     let result = await cartService.addProduct(cid, pid, quantity);
- 
-   
-    // let result = await cartService.calculateTotalPrice(cid);
     res.send({ result: "success", payload: result });
   }
 }

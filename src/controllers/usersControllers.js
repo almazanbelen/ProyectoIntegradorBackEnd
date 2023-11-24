@@ -6,7 +6,6 @@ const userRole = require("../utils/usersRole.js");
 const jwt = require("jsonwebtoken");
 const User = require("../dao/models/User.js");
 
-
 //login
 async function getLogin(req, res) {
   res.render("login");
@@ -23,14 +22,17 @@ async function postLogin(req, res) {
   if (!user) {
     return res.status(400).render("login", { error: "Usuario no encontrado" });
   }
-
-  if (email === config.adminNAME || email === config.adminEMAIL && isValidatePassword(user, password)) {
+  //validacion de acceso privado
+  if (
+    email === config.adminNAME ||
+    (email === config.adminEMAIL && isValidatePassword(user, password))
+  ) {
     req.session.email = email;
     res.redirect("/api/sessions/private");
     if (!isValidatePassword(user, password)) {
       return res.status(401).render("login", { error: "Error en password" });
     }
-  }else {
+  } else {
     // Set the user session here if login is successful
     req.session.user = {
       first_name: user.first_name,
@@ -119,6 +121,7 @@ async function getRestore(req, res) {
 }
 async function postRestore(req, res) {
   const token = req.params.token;
+  //crear token para enviar correo de restauracion de contraseña
   jwt.verify(token, "CoderKey", async (err, decoded) => {
     if (err) {
       console.log(err);
@@ -141,22 +144,24 @@ async function postRestore(req, res) {
   });
 }
 //cambio de rol del usuario
-async function putRole(req, res){
-  const {uid} = req.params
-  const user = await User.findById(uid)
-  if (user.email == config.adminEMAIL && user.role == "premium"){
+async function putRole(req, res) {
+  const { uid } = req.params;
+  
+  //cambiar de role de premium a user y visceversa
+  const user = await User.findById(uid);
+  if (user.email == config.adminEMAIL && user.role == "premium") {
     const role = await User.updateOne({
-      role: "user"
-    })
-    res.send({result: "Success", payload: role})
+      role: "user",
+    });
+    res.send({ result: "Success", payload: role });
   }
-  if (user.email == config.adminEMAIL && user.role == "user"){
+  if (user.email == config.adminEMAIL && user.role == "user") {
     const role = await User.updateOne({
-      role: "premium"
-    })
-    res.send({result: "Success", payload: role})
-  }else{
-    res.send({error: "Usuario no autorizado para realizar cambio de rol"})
+      role: "premium",
+    });
+    res.send({ result: "Success", payload: role });
+  } else {
+    res.send({ error: "Usuario no autorizado para realizar cambio de rol" });
   }
 }
 

@@ -20,5 +20,6 @@ module.exports = {
   twilioSMS:process.env.TWILIO_SMS,
   adminEMAIL:process.env.ADMIN_EMAIL,
   enviroment:process.env.NODE_ENV,
-  persistence:process.env.PERSISTENCE
+  persistence:process.env.PERSISTENCE,
+  jwtKey:process.env.PRIVATE_KEY
 };

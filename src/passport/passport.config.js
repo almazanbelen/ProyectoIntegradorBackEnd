@@ -1,22 +1,24 @@
+//imports
 const passport = require("passport");
 const local = require("passport-local");
 const userService = require("../dao/models/User");
 const GitHubStrategy = require("passport-github2");
-const jwt = require("passport-jwt")
+const jwt = require("passport-jwt");
 const { createHash, isValidatePassword } = require("../utils/utils");
 const userRole = require("../utils/usersRole");
 
+//instancias
 const localStrategy = local.Strategy;
 const JWTStrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
 
-const cookieExtractor = req => {
-  let token = null
-  if(req && req.cookies){
-    token = req.cookies["coderCookieToken"]
+const cookieExtractor = (req) => {
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies["coderCookieToken"];
   }
-  return token
-}
+  return token;
+};
 
 const initializePassport = () => {
   passport.use(
@@ -25,7 +27,7 @@ const initializePassport = () => {
       { passReqToCallback: true, usernameField: "email" },
       async (req, username, password, done) => {
         const { first_name, last_name, email, age } = req.body;
-        const { role } = userRole(email)
+        const { role } = userRole(email);
         try {
           let user = await userService.findOne({ email: username });
           if (user) {
@@ -33,7 +35,14 @@ const initializePassport = () => {
             return done(null, false);
           }
 
-          if (!first_name || !last_name || !email || !age || !password || !role) {
+          if (
+            !first_name ||
+            !last_name ||
+            !email ||
+            !age ||
+            !password ||
+            !role
+          ) {
             // Check if all required fields are present in the request body
             console.log("Faltan campos obligatorios");
             return done(null, false);
@@ -45,7 +54,7 @@ const initializePassport = () => {
             email,
             age,
             password: createHash(password),
-            role
+            role,
           };
           let result = await userService.create(newUser);
           return done(null, result);
@@ -109,17 +118,23 @@ const initializePassport = () => {
       }
     )
   );
-  
-  passport.use("jwt", new JWTStrategy({
-    jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-    secretOrKey: "coderhouse"
-  }, async(jwt_payload, done) => {
-    try {
-      return done(null, jwt_payload)
-    } catch (error) {
-      return done(error)
-    }
-  }))
+
+  passport.use(
+    "jwt",
+    new JWTStrategy(
+      {
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+        secretOrKey: "coderhouse",
+      },
+      async (jwt_payload, done) => {
+        try {
+          return done(null, jwt_payload);
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
 
   passport.serializeUser((user, done) => {
     done(null, user._id);
@@ -135,6 +150,5 @@ const initializePassport = () => {
   });
 };
 
-
-
+//exports
 module.exports = initializePassport;
