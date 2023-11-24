@@ -17,7 +17,7 @@ router.post("/user/:uid", cartControllers.postCart);
 router.put("/:cid", cartControllers.putCart);
 
 // agregar un producto
-router.put("/:cid/products/:pid", cartControllers.addProduct);
+router.put("/:cid/products/:pid/user/:uid", cartControllers.addProduct);
 
 //eliminar un carrito
 router.delete("/:cid", cartControllers.deleteCart);

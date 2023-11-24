@@ -16,7 +16,7 @@ const ticketSchema = new mongoose.Schema({
       },
     ],
   },
-  amount: { type: Number },
+  amount: { type: Number , require: true},
 });
 ticketSchema.pre("findOne", function () {
   this.populate("purchase.cart");

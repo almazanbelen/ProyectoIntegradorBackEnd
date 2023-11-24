@@ -4,7 +4,8 @@ const userService = require("../dao/factory/factoryUsers.js");
 const config = require("../config/config");
 const userRole = require("../utils/usersRole.js");
 const jwt = require("jsonwebtoken");
-const PRIVATE_KEY = "CoderKey";
+const User = require("../dao/models/User.js");
+
 
 //login
 async function getLogin(req, res) {
@@ -139,6 +140,25 @@ async function postRestore(req, res) {
     }
   });
 }
+//cambio de rol del usuario
+async function putRole(req, res){
+  const {uid} = req.params
+  const user = await User.findById(uid)
+  if (user.email == config.adminEMAIL && user.role == "premium"){
+    const role = await User.updateOne({
+      role: "user"
+    })
+    res.send({result: "Success", payload: role})
+  }
+  if (user.email == config.adminEMAIL && user.role == "user"){
+    const role = await User.updateOne({
+      role: "premium"
+    })
+    res.send({result: "Success", payload: role})
+  }else{
+    res.send({error: "Usuario no autorizado para realizar cambio de rol"})
+  }
+}
 
 //current para jwt
 function current(req, res) {
@@ -158,5 +178,6 @@ module.exports = {
   logout,
   getRestore,
   postRestore,
+  putRole,
   current,
 };

@@ -51,6 +51,9 @@ router.get("/restore/:token", usersController.getRestore);
 
 router.post("/restore/:token", usersController.postRestore);
 
+//cambio de rol de usuario
+router.put("/premium/:uid", usersController.putRole)
+
 //current para jwt
 router.get(
   "/current",

@@ -2,7 +2,7 @@
 const { productService } = require("../services/repositories/index");
 const User = require("../dao/models/User");
 const { productModel } = require("../dao/models/product.model");
-
+const { v4:uuidv4 }= require("uuid")
 
 //ver productos
 async function getProducts(req, res) {
@@ -36,27 +36,29 @@ async function productById(req, res) {
 
 //agregar producto
 async function postProduct(req, res) {
-  let { title, description, code, price, stock, category, owner } = req.body;
+  let { title, description, price, stock, category, owner } = req.body;
 
-  if (!title || !description || !code || !price || !stock || !category) {
+  let  code  = uuidv4()
+  
+  if (!title || !description || !price || !stock || !category) {
     if (code) res.send({ status: "error", error: "Faltan parámetros" });
   }
-  let user = await User.findOne({_id: owner})
-  
+  let user = await User.findOne({ _id: owner });
+
   if (user.role == "premium" || user.role == "admin") {
-    let result = await productModel.create({
+    let result = await productService.postProduct({
       title,
       description,
-      code,
+      code: code,
       price,
       stock,
       category,
-      owner: { user: owner },
+      owner,
     });
 
     res.send({ result: "success", payload: result });
-  } else{
-    res.send({ error: "Acceso no autorizado" })
+  } else {
+    res.send({ error: "Acceso no autorizado" });
   }
 }
 
@@ -80,9 +82,30 @@ async function putProduct(req, res) {
 
 //eliminar producto
 async function deleteProduct(req, res) {
-  let { pid } = req.params;
-  let result = await productService.deleteProducts(pid);
-  res.send({ result: "success", payload: result });
+  let { pid, uid } = req.params;
+//----------mandar al dao
+  let product = await productModel.findOne({ _id: pid });
+  let role;
+  product.owner.map((o) => {
+    role = o.user.role;
+  });
+//-----mandar al dao
+  let user = await User.findOne({ _id: uid });
+
+  if (role == "premium" && user.role === "premium") {
+    let result = await productService.deleteProducts(pid);
+    res.send({ result: "success", payload: result });
+  } 
+
+  if (user.role === "admin") {
+    let result = await productService.deleteProducts(pid);
+    res.send({ result: "success", payload: result });
+  } else {
+    res.send({
+      error:
+        "No puedes eliminar este producto ya que no cuentas con autorizacion",
+    });
+  }
 }
 
 module.exports = {

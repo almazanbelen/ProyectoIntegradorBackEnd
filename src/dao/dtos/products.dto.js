@@ -5,6 +5,7 @@ module.exports = class productsDTO {
         this.code = product.code,
         this.price = product.price,
         this.stock = product.stock ,
-        this.category = product.category
+        this.category = product.category,
+        this.owner = product.owner
     }
 }

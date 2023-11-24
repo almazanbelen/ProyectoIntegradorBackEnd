@@ -6,14 +6,7 @@ const product = new Products();
 const productService = new ProductRepository(product);
 
 
-const Tickets = require("../../dao/class/tickets.dao");
-const TicketRepository = require("../repositories/tickets.repository");
-
-
-const ticket = new Tickets();
-const ticketService = new TicketRepository(ticket);
 
 module.exports = {
-  productService,
-  ticketService
+  productService
 };

@@ -1,7 +1,9 @@
 //imports
 
 const Cart = require("../dao/class/cart.dao");
-
+const User = require("../dao/models/User");
+const { cartModel } = require("../dao/models/cart.model");
+const { productModel } = require("../dao/models/product.model");
 
 //instancia de carrito
 const cartService = new Cart();
@@ -14,11 +16,11 @@ async function getCart(req, res) {
 
 //ver carrito by ID
 
-async function getCartById(req, res){
-  let {cid} = req.params
-  if(!cid){
+async function getCartById(req, res) {
+  let { cid } = req.params;
+  if (!cid) {
     res.send({ status: "error", error: "Carrito no encontrado" });
-  }else {
+  } else {
     let result = await cartService.getCartById(cid);
     res.send({ result: "success", payload: result });
   }
@@ -45,11 +47,29 @@ async function putCart(req, res) {
 
 //agregar un producto
 async function addProduct(req, res) {
-  let { cid, pid } = req.params;
+  let { cid, pid, uid } = req.params;
   const { quantity } = req.body;
-  let newProduct = await cartService.addProduct(cid, pid, quantity);
-  let result = await cartService.calculateTotalPrice(cid);
-  res.send({ result: "success", payload: result });
+  
+  let product = await productModel.findOne({ _id: pid });
+  let role;
+  product.owner.map((o) => {
+    role = o.user.role;
+  });
+  let user = await User.findOne({ _id: uid });
+
+
+  if (role == "premium" && user.role == "premium") {
+    res.send({ error: "No puedes agregar un producto creado por ti" });
+  }
+  if(product.stock < quantity){
+    res.send({error: `Stock insuficiente, stock disponible: ${product.stock}`})
+  } else {
+    let result = await cartService.addProduct(cid, pid, quantity);
+ 
+   
+    // let result = await cartService.calculateTotalPrice(cid);
+    res.send({ result: "success", payload: result });
+  }
 }
 
 //eliminar un carrito

@@ -6,7 +6,7 @@ const productsCollection = "products";
 const productsSchema = new mongoose.Schema({
     title:{type: String, required: true, max: 100},
     description:{type: String, required: true, max: 100},
-    code:{type: Number, required: true},
+    code:{type: String, required: true},
     price:{type: Number, required: true},
     stock:{type: Number, required: true},
     category:{type: String, required: true, max: 100, index: true},
@@ -16,7 +16,8 @@ const productsSchema = new mongoose.Schema({
             user: {
               type: mongoose.Schema.Types.ObjectId,
               ref: "users",
-              default: "admin"
+              required: true,
+              // default: "admin"
             }
           }
         ]
@@ -24,7 +25,7 @@ const productsSchema = new mongoose.Schema({
 })
 
 productsSchema.pre("findOne", function () {
-    this.populate("owner");
+    this.populate("owner.user");
   });
 
 productsSchema.plugin(mongoosePaginate)

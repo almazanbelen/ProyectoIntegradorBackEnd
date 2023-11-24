@@ -38,7 +38,7 @@ module.exports = class Products {
         price,
         stock,
         category, 
-        owner
+        owner: { user: owner }
       });
       return product;
     } catch (error) {

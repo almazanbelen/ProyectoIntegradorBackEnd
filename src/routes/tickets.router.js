@@ -9,14 +9,12 @@ const router = Router();
 //obtener todos los tickets
 router.get("/", ticketsControllers.getTicket);
 
-//obtener un ticket
-router.get("/:tid", ticketsControllers.getTicketById);
+// //obtener un ticket
+// router.get("/:tid", ticketsControllers.getTicketById);
 
 //crear un tiket
-router.post("/", ticketsControllers.postTicket)
+router.post("/:cid/purchase", ticketsControllers.postTicket)
 
-//confirmar compra
-router.post("/:tid/:cid/purchase", ticketsControllers.confirmationTicket
-)
+
 
 module.exports = router;

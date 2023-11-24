@@ -1,7 +1,7 @@
 //imports
 const { Router } = require("express");
 const productControllers = require("../controllers/productControllers");
-const { auth } = require("../utils/authRole");
+
 
 const router = Router();
 
@@ -18,6 +18,6 @@ router.post("/", productControllers.postProduct);
 router.put("/:pid", productControllers.putProduct);
 
 //eliminar producto
-router.delete("/:pid", productControllers.deleteProduct);
+router.delete("/:pid/:uid", productControllers.deleteProduct);
 
 module.exports = router;

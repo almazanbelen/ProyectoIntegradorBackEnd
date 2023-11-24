@@ -14,7 +14,7 @@ module.exports = class ProductRepository {
     let result = await this.dao.productById(pid);
     return result;
   };
-  createProduct = async (product) => {
+  postProduct = async (product) => {
     let products = new ProductsDTO(product);
     let result = await this.dao.postProduct(
       products.title,
@@ -22,7 +22,8 @@ module.exports = class ProductRepository {
       products.code,
       products.price,
       products.stock,
-      products.category
+      products.category,
+      products.owner
     );
     return result;
   };

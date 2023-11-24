@@ -4,9 +4,15 @@ const cartCollection = "carts";
 
 const cartSchema = new mongoose.Schema({
   user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "products",
-    require: true,
+    type: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "products",
+          require: true,
+        },
+      }
+    ]
   },
   products: {
     type: [
@@ -16,7 +22,7 @@ const cartSchema = new mongoose.Schema({
           ref: "products",
           require: true,
         },
-        quantity: { type: Number },
+        quantity: { type: Number , default: 1},
       },
     ],
     default: [],
@@ -28,7 +34,7 @@ cartSchema.pre("findOne", function () {
   this.populate("products.product");
 });
 cartSchema.pre("findOne", function () {
-  this.populate("user");
+  this.populate("user.user");
 });
 
 const cartModel = mongoose.model(cartCollection, cartSchema);
